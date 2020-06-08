@@ -1,18 +1,38 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { SharedModule } from './shared';
+import { environment } from '../environments/environment';
+import { HomeLayoutComponent } from './pages/layout/home-layout/home-layout.component';
+import { HttpClientModule } from '@angular/common/http';
+import { AppSettings } from './app.settings';
+import { CoreModule } from './core/core.module';
+//Firebase
+import { AngularFireModule } from '@angular/fire';
+
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    HomeLayoutComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    HttpClientModule,
+    CoreModule,
+    SharedModule,
+
+    //Firebase
+    AngularFireModule.initializeApp(environment.firebase, 'App'),
+
   ],
-  providers: [],
+  providers: [
+    AppSettings
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
