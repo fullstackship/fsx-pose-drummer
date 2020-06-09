@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "fullstackx-dev": {
+      "hosting": {
+        "PoseDrummer": [
+          "fullstackx-dev"
+        ]
+      }
+    }
+  }
+}

@@ -11,10 +11,21 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "es2015",
+    // "allowSyntheticDefaultImports": "true",
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "paths": {
+      "@app/*": ["./src/app/*"],
+      "@assets/*": ["./src/assets/*"],
+      "@environment": ["./src/environments/environment.ts"],
+      "@core/*": ["./src/app/core/*"],
+      "@shared/*": ["./src/app/shared/*"]
+    }
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,

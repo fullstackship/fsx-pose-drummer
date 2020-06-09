@@ -8,72 +8,83 @@ import {
   AngularFirestoreDocument
 } from '@angular/fire/firestore';
 
-import { Observable, of } from 'rxjs';
+import { Observable, of, BehaviorSubject } from 'rxjs';
 import { switchMap, startWith, tap, filter, first, take, shareReplay, map, distinctUntilChanged } from 'rxjs/operators';
 import { NotifyService } from '@app/core/services/notify.service';
-import { FireService } from '@app/core/services/firebase/fire.service';
 import { FireUser } from '@app/core/models/firebase/fireuser';
+import { Logger } from '@app/shared/services/logger.service';
+import { CommonFireService } from './common.fire.service';
 
 
 
 @Injectable()
-export class FirebaseAuthService {
-  user$: Observable<FireUser | null>;
-  signInedUser: FireUser;
-  private isAuthenticated = false;
+export class AuthFireService {
+  private user$: Observable<FireUser | null>;
+  private signInedUser: FireUser;
+  // private isAuth$ = false;
+  private isAuth$ = new BehaviorSubject<boolean>(false);
+  public isAuthenticated$ = this.isAuth$.asObservable();
 
   constructor(
-    private fireSV: FireService,
+    private fireSV: CommonFireService,
     private afAuth: AngularFireAuth,
     private afs: AngularFirestore,
     private router: Router,
     private notify: NotifyService,
-    private zone: NgZone
+    private zone: NgZone,
+    private logger: Logger
   ) {
 
     // To Many occurs
-    // this.afAuth.auth.onAuthStateChanged((user) => {
-    //   console.log(" --> onAuthStateChanged: ", user);
+    // this.afAuth.onAuthStateChanged((user) => {
+    //   this.logger.log(" --> onAuthStateChanged: ", user);
     // });
 
 
     // TODO: signInedUser is unstable
-    this.user$ = this.afAuth.authState.pipe(
-      // tap(user => console.log('user from authState: ', user)),
-      first(),
-      distinctUntilChanged(),
-      switchMap(user => {
+    // this.user$ = this.afAuth.authState.pipe(
+    //   // tap(user => this.logger.log('user from authState: ', user)),
+    //   take(1),
+    //   distinctUntilChanged(),
+    //   switchMap(user => {
+    //     if (user) {
+    //       this.signInedUser = this.makeUserObj(user);
+    //       this.logger.log("  --> switchMap/signInedUser: ", this.signInedUser);
+    //       const fUser$ = this.afs.doc<FireUser>(`users/${this.signInedUser.uid}`).valueChanges();
+    //       return fUser$.pipe(
+    //         tap(u => this.logger.log("  --> fUser: ", u)),
+    //         map(u => u)
+    //       );
+
+    //     } else {
+    //       return of(null);
+    //     }
+    //   }),
+    //   shareReplay(1)
+    // );
+
+    this.checkAuthenticated();
+  }
+
+  // Checks whether a user session exists
+  checkAuthenticated() {
+    // TODO
+    this.authedUser().subscribe(
+      user => {
+        console.log("checkAuthenticated|user: ", user);
         if (user) {
-          this.signInedUser = this.makeUserObj(user);
-          console.log("  --> switchMap/signInedUser: ", this.signInedUser);
-          const fUser$ = this.afs.doc<FireUser>(`users/${this.signInedUser.uid}`).valueChanges();
-          return fUser$.pipe(
-            tap(u => console.log("  --> fUser: ", u)),
-            map(u => u)
-          );
-
-        } else {
-          return of(null);
+          this.isAuth$.next(true);
         }
-      }),
-      shareReplay(1)
+      }
     );
-
   }
 
-  getSignInedUser() {
-    return this.signInedUser;
+
+  getCurrentUser$() {
+    return this.afAuth.currentUser;
   }
 
-  getUser$() {
-    return this.user$;
-  }
-
-  getCurrentUser() {
-    return this.afAuth.auth.currentUser;
-  }
-
-  isLoggedIn() {
+  authedUser() {
     return this.afAuth.authState.pipe(first());
   }
 
@@ -90,16 +101,14 @@ export class FirebaseAuthService {
     };
 
     if (user) {
-      console.log("  -->updateUserData: ", user);
-      console.log("  -->isLoggedIn? ", this.isLoggedIn());
+      this.logger.log("  -->updateUserData: ", user);
 
       const userRef = this.afs.doc<FireUser>(`users/${user.uid}`);
       //return userRef.set(fireUser, { merge: true }); //Destructively updates { merge: true } option
       return this.fireSV.upsert(`users/${user.uid}`, fireUser);
 
     } else {
-      // Is It really necessary?
-      this.signOut();
+      this.signOut(); // Is It really necessary?
     }
   }
 
@@ -107,25 +116,13 @@ export class FirebaseAuthService {
 
   private doSignInAndUpdateUserData(provider: any) {
 
-    // this.zone.runOutsideAngular(() => {
-    //   return this.afAuth.auth
-    //     .signInWithPopup(provider)
-    //     .then(credential => {
-    //       // this.notify.update('Welcome to Firebase!', 'success');
-    //       console.log("  --> signIn Success: ", credential);
-    //       this.isAuthenticated = true;
-    //       return this.updateUserData(this.makeUserObj(credential.user));
-    //     })
-    //     .catch(error => this.handleError(error));
-    // });
 
-
-    return this.afAuth.auth
+    return this.afAuth
       .signInWithPopup(provider)
       .then(credential => {
-        console.log("  --> signIn Success: ", credential);
+        this.logger.log("  --> signIn Success: ", credential);
         this.notify.update('Welcome to Firebase!', 'success');
-        this.isAuthenticated = true;
+        this.isAuth$.next(true);
         return this.updateUserData(this.makeUserObj(credential.user));
       })
       .catch(error => this.handleError(error));
@@ -143,31 +140,31 @@ export class FirebaseAuthService {
 
 
 
-  googleLogin() {
+  googleSingin() {
     const provider = new auth.GoogleAuthProvider();
     return this.doSignInAndUpdateUserData(provider);
   }
 
-  githubLogin() {
+  githubSignin() {
     const provider = new auth.GithubAuthProvider();
     return this.doSignInAndUpdateUserData(provider);
   }
 
-  facebookLogin() {
+  facebookSignin() {
     const provider = new auth.FacebookAuthProvider();
     return this.doSignInAndUpdateUserData(provider);
   }
 
-  twitterLogin() {
+  twitterSignin() {
     const provider = new auth.TwitterAuthProvider();
     return this.doSignInAndUpdateUserData(provider);
   }
 
 
 
-  // Anonymous Auth
-  anonymousLogin() {
-    return this.afAuth.auth
+  // Anonymous Auth : Not using now
+  anonymousSignin() {
+    return this.afAuth
       .signInAnonymously()
       .then(credential => {
         this.notify.update('Welcome to Firestarter!!!', 'success');
@@ -183,7 +180,7 @@ export class FirebaseAuthService {
 
   // Email/Password Auth
   emailSignUp(email: string, password: string) {
-    return this.afAuth.auth
+    return this.afAuth
       .createUserWithEmailAndPassword(email, password)
       .then(credential => {
         this.notify.update('Welcome new user!', 'success');
@@ -193,7 +190,7 @@ export class FirebaseAuthService {
   }
 
   emailLogin(email: string, password: string) {
-    return this.afAuth.auth
+    return this.afAuth
       .signInWithEmailAndPassword(email, password)
       .then(credential => {
         this.notify.update('Welcome back!', 'success');
@@ -212,11 +209,20 @@ export class FirebaseAuthService {
       .catch(error => this.handleError(error));
   }
 
-  signOut() {
-    return this.afAuth.auth.signOut();
-    // this.afAuth.auth.signOut().then(() => {
-    //   this.router.navigate(['/']);
-    // });
+  async signOut(redirect?: string) {
+    try {
+      await this.afAuth.signOut();
+      this.isAuth$.next(false);
+      if (redirect) {
+        this.router.navigate([redirect]);
+      }
+
+    } catch (err) {
+      this.logger.log('err');
+    } finally {
+      this.router.navigate(['/home']);
+    }
+
   }
 
   // If error, console log and notify user

@@ -1,16 +1,16 @@
 import { NgModule } from '@angular/core'
 import { Routes, RouterModule } from '@angular/router'
-import { HomeLayoutComponent } from './modules/layout/home-layout/home-layout.component'
+import { HomeLayoutComponent } from './pages/layout/home-layout/home-layout.component'
 
 const homeChilrdrenRoutes: Routes = [
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'p5',
     pathMatch: 'full'
   },
   {
-    path: 'home',
-    loadChildren: () => import('./modules/home/home.module').then(mod => mod.HomeModule)
+    path: 'p5',
+    loadChildren: () => import('./pages/p5/p5.module').then(mod => mod.P5Module)
   },
 
 ]
@@ -21,12 +21,12 @@ const routes: Routes = [
 
   {
     path: '',
-    component: HomeLayoutComponent,
+    // component: HomeLayoutComponent,
     children: homeChilrdrenRoutes
   },
   // {
   //   path: 'admin',
-  //   loadChildren: () => import('./modules/admin/admin.module').then(mod => mod.AdminModule)
+  //   loadChildren: () => import('./pages/admin/admin.module').then(mod => mod.AdminModule)
   // }
 
 ]

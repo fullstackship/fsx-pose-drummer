@@ -4,7 +4,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 
 import { ErrorComponent } from './components/error/error.component'
-import { DropzoneDirective } from './components/dropzone/dropzone.directive'
 
 import { ToolbarComponent } from './components/toolbar/toolbar.component'
 import { MaterialModule } from './material.module'
@@ -24,7 +23,6 @@ const SHARED_MODULES = [
 
 const SHARED_COMPONENTS = [
   ErrorComponent,
-  DropzoneDirective,
   ToolbarComponent,
 ]
 

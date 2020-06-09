@@ -1,6 +1,6 @@
+import { Settings, AppSettings } from './../../../app.settings';
 import { Component, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
-import { AppSettings, Settings } from '@app/app.settings'
 
 @Component({
   selector: 'app-home-layout',
