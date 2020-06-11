@@ -27,6 +27,7 @@
       "@shared/*": ["./src/app/shared/*"]
     }
   },
+  // "exclude": ["node_modules", "typings"],
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
     "strictInjectionParameters": true
