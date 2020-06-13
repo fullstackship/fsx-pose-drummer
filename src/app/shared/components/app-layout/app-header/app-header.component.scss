@@ -1,0 +1,55 @@
+// Custom Slide Theme swicher
+.custom-slide-toggle {
+  .mat-slide-toggle-thumb {
+    width: 12px !important;
+    height: 12px !important;
+    transform: translate(50%, 50%);
+  }
+
+  .mat-slide-toggle-bar {
+    border-radius: 15px !important;
+    height: 18px !important;
+  }
+
+  .mat-slide-toggle-thumb-container {
+    top: -3px !important;
+  }
+}
+
+.custom-material-light-theme {
+  .mat-slide-toggle {
+    &:not(.mat-checked) {
+      .mat-slide-toggle-thumb {
+        background-color: #3f51b5 !important;
+      }
+    }
+    &.mat-checked {
+      .mat-slide-toggle-thumb {
+        background-color: rgb(0, 0, 0) !important;
+      }
+    }
+
+    .mat-slide-toggle-bar {
+      background-color: rgb(255, 238, 5) !important;
+    }
+  }
+}
+
+.custom-material-dark-theme {
+  .mat-slide-toggle {
+    &:not(.mat-checked) {
+      .mat-slide-toggle-thumb {
+        background-color: #424242 !important;
+      }
+    }
+    &.mat-checked {
+      .mat-slide-toggle-thumb {
+        background-color: rgb(0, 0, 0) !important;
+      }
+
+      .mat-slide-toggle-bar {
+        background-color: #6d82f8 !important;
+      }
+    }
+  }
+}

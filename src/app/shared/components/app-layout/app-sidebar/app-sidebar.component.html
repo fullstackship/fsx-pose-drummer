@@ -1,0 +1,64 @@
+<div class="sidebar-container-wrapper ">
+  <div class="fsx-sidebar-header " *ngIf="showHeader">
+    <!-- <app-logo></app-logo> -->
+  </div>
+
+  <div>
+    <div class="side-panel">
+      <fsx-side-panel *ngIf="showSidePanel"></fsx-side-panel>
+    </div>
+
+    <div class="sidebar-container">
+      <ng-container *ngIf="!(isSmall$|async); else Small">
+        <mat-nav-list fxLayout="column">
+
+          <div [ngClass]="sidebarClass$|async">
+            <a mat-list-item [routerLink]="['/main/note/note-manager']" [routerLinkActive]="['active-link']">
+              <mat-icon>create_new_folder</mat-icon>
+              <span>Pose Drummer</span>
+            </a>
+            <a mat-list-item [routerLink]="['/main/note/note-list']" [routerLinkActive]="['active-link']">
+              <mat-icon>table_chart</mat-icon>
+              <span>Saved Models</span>
+            </a>
+          </div>
+          <div [ngClass]="sidebarClass$|async">
+            <a mat-list-item [routerLink]="['/admin/product/group-manager']" [routerLinkActive]="['active-link']">
+              <mat-icon>shop</mat-icon>
+              <span>Sound Training</span>
+            </a>
+          </div>
+        </mat-nav-list>
+      </ng-container>
+      <ng-template #Small>
+        <mat-nav-list fxLayout="column" fxLayoutAlign="center center">
+          <div class="small-sidebar">
+            <a mat-list-item [routerLink]="['/main/note/note-manager']" [routerLinkActive]="['active-link']"
+              [ngStyle]="{'height':'80px'}">
+              <mat-icon [ngStyle]="{'font-size':'40px','margin-right':'18px','margin-bottom':'15px'}">create_new_folder
+              </mat-icon>
+            </a>
+            <a mat-list-item [routerLink]="['/main/note/note-list']" [routerLinkActive]="['active-link']"
+              [ngStyle]="{'height':'80px'}">
+              <mat-icon [ngStyle]="{'font-size':'40px','margin-right':'18px','margin-bottom':'15px'}">table_chart
+              </mat-icon>
+            </a>
+            <a mat-list-item [routerLink]="['/admin/product/group-manager']" [routerLinkActive]="['active-link']"
+              [ngStyle]="{'height':'80px'}">
+              <mat-icon [ngStyle]="{'font-size':'40px','margin-right':'18px','margin-bottom':'15px'}">shop_two
+              </mat-icon>
+            </a>
+            <a mat-list-item [routerLink]="['/admin/bookmark/bookmark-manager']" [routerLinkActive]="['active-link']"
+              [ngStyle]="{'height':'80px'}">
+              <mat-icon [ngStyle]="{'font-size':'40px','margin-right':'18px','margin-bottom':'15px'}">
+                collections_bookmark
+              </mat-icon>
+            </a>
+          </div>
+        </mat-nav-list>
+      </ng-template>
+    </div>
+
+
+  </div>
+</div>

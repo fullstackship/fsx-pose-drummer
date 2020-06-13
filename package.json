@@ -1,5 +1,5 @@
 {
-  "name": "pose-drummer",
+  "name": "DeepMediaX",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -23,6 +23,7 @@
     "@angular/platform-browser": "~9.1.9",
     "@angular/platform-browser-dynamic": "~9.1.9",
     "@angular/router": "~9.1.9",
+    "@fullstackx/responsive-layout": "0.0.1",
     "firebase": "^7.15.0",
     "ml5": "^0.5.0",
     "ng-json-view": "^3.0.0",

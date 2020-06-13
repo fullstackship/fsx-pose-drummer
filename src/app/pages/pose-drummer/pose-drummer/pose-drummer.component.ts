@@ -1,13 +1,20 @@
-import { Component, OnInit, ElementRef, NgZone, ViewChild } from '@angular/core';
+import { PoseTrainDataComponent } from './../pose-train-data/pose-train-data.component';
+import { Component, OnInit, ElementRef, NgZone, ViewChild, ChangeDetectionStrategy, Output, EventEmitter, ComponentFactoryResolver, SimpleChanges, SimpleChange } from '@angular/core';
 import * as p5 from 'p5';
+import { DynamicComp } from '../dynamicComp';
+import { AnchorDirective } from '@app/shared/components/anchor.directive';
 declare let ml5: any;
 
 @Component({
   selector: 'app-pose-drummer',
   templateUrl: './pose-drummer.component.html',
-  styleUrls: ['./pose-drummer.component.scss']
+  styleUrls: ['./pose-drummer.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PoseDrummerComponent implements OnInit {
+
+  @ViewChild(AnchorDirective, { static: true }) anchor: AnchorDirective;
+  // @Output() changeEmit: EventEmitter<string> = new EventEmitter<string>();
 
 
   p5; //p5 sketch instance
@@ -28,16 +35,22 @@ export class PoseDrummerComponent implements OnInit {
 
   /* NeuralNetwork Options */
   nn_inputs = 34;
-  nn_outputs = 5;
+  nn_outputs = 3;
 
   capturedImages: Array<any> = [];
   nn_data; //NeuralNetworkData.data.raw
+
+  dynamicComponent = PoseTrainDataComponent;
+  currComponentRef;
+  currData; //data from PoseTrainDataComponent
 
   @ViewChild('video', { static: true }) public videoEl: ElementRef;
   @ViewChild('p5Container', { static: true }) p5Container: ElementRef;
   @ViewChild('snapCanvas', { static: false }) snapCanvas: ElementRef;
 
-  constructor(private zone: NgZone) {
+  constructor(
+    private componentFactoryResolver: ComponentFactoryResolver,
+    private zone: NgZone) {
 
   };
 
@@ -49,10 +62,18 @@ export class PoseDrummerComponent implements OnInit {
 
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+
+  }
+
   ngOnDestroy(): void {
 
     //dispose and relase the memory for the model
-    this.nn.dispose();
+    if (this.nn !== null && this.nn !== undefined) {
+      this.nn.dispose();
+    }
+
+
 
   }
 
@@ -135,14 +156,15 @@ export class PoseDrummerComponent implements OnInit {
             inputs.push(x);
             inputs.push(y);
           }
-          let target = [this.targetLabel];
+          let target = [this.currData.targetLabel];
+          console.log('inputs.length :' + inputs.length);
           // https://github.com/ml5js/ml5-library/blob/development/src/NeuralNetwork/index.js#L166
           this.nn.addData(inputs, target);
         }
       }
     });
 
-
+    this.createNewNN();
 
     //Load Pretrained Model
     // this.loadPretrainedModel();
@@ -170,7 +192,7 @@ export class PoseDrummerComponent implements OnInit {
     let options = {
       inputs: this.nn_inputs,
       output: this.nn_outputs,
-      task: 'classfication',
+      task: 'classification',
       debug: true
     };
     // https://github.com/ml5js/ml5-library/blob/development/src/NeuralNetwork/NeuralNetwork.js
@@ -221,9 +243,7 @@ export class PoseDrummerComponent implements OnInit {
   }
 
   autoCollectData() {
-    console.log('targetLabel: ', this.targetLabel);
-
-    this.createNewNN();
+    console.log('targetLabel: ', this.currData.targetLabel);
 
     setTimeout(() => {
       console.log('Collecting Data...');
@@ -233,14 +253,14 @@ export class PoseDrummerComponent implements OnInit {
         this.state = 'wating-to-collect';
         console.log(" --> this.nn : ", this.nn);
         console.log(" --> this.nn.neuralNetworkData.data : ", this.nn.neuralNetworkData.data);
-        this.updateJsonData()
-      }, 3000);
-    }, 1000);
+        this.updateJsonData();
+      }, 5000);
+    }, 2500);
   }
 
   updateJsonData() {
     this.nn_data = JSON.parse(JSON.stringify(Object.assign({}, this.nn.neuralNetworkData.data.raw)));
-    console.log("nn_data: ", this.nn_data)
+    // console.log("nn_data: ", this.nn_data);
   }
 
 
@@ -252,24 +272,63 @@ export class PoseDrummerComponent implements OnInit {
 
     const context = this.snapCanvas.nativeElement.getContext('2d').drawImage(this.videoEl.nativeElement, 0, 0, 80, 60);
 
-    this.capturedImages.push(this.snapCanvas.nativeElement.toDataURL('image/png'));
+    const capturedImage = this.snapCanvas.nativeElement.toDataURL('image/png');
+
+    // console.log("currComponentRef: ", this.currComponentRef);
+    // console.log("capturedImage: ", capturedImage);
+    (<DynamicComp>this.currComponentRef.instance).capturedImage = capturedImage;
+
+    const changes = {
+      capturedImage: new SimpleChange('', capturedImage, false)
+    };
+
+    // this.currComponentRef.instance.ngOnChanges(changes);
+
+
+    // this.capturedImages.push(capturedImage);
+
     // because live video update on the canvas stop
     // this.video = this.p5.createCapture(this.p5.VIDEO);
     // this.video.hide();
   }
 
+  addPoseTrainDataComp() {
+    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.dynamicComponent);
+    const viewContainerRef = this.anchor.viewContainerRef;
+    // viewContainerRef.clear();
+    const componentRef = viewContainerRef.createComponent(componentFactory);
+
+    (componentRef.instance as DynamicComp).event.subscribe(
+      data => {
+        console.log(" data from DynamicComp: ", data);
+        this.currComponentRef = componentRef;
+        this.currData = data;
+        this.autoCollectData();
+      }
+    );
+
+  }
+
+
   startTraining() {
     this.nn.normalizeData();
+    console.log("  -->this.nn: ", this.nn);
     this.nn.train({ epochs: 50 }, this.trainFinished);
   }
 
-  trainFinished() {
+  trainFinished = () => {
     console.log('The Model is trained!');
-    this.nn.save();
+    console.log("  -->this.nn: ", this.nn);
+    // this.nn.save();
+    // this.classifyPose();
+  };
+
+
+  startClassifyPose() {
     this.classifyPose();
   }
 
-  classifyPose() {
+  classifyPose = () => {
     if (this.pose) {
       let inputs = [];
       for (let i = 0; i < this.pose.keypoints.length; i++) {
@@ -282,15 +341,20 @@ export class PoseDrummerComponent implements OnInit {
     } else {
       setTimeout(this.classifyPose, 100);
     }
-  }
+  };
 
 
-  gotResult(err, results) {
-    if (results[0].confidence > 0.75) {
-      this.poseLabel = results[0].lable.toUpperCase();
+
+  gotResult = (err, results) => {
+    console.log("gotResult: ", results);
+    if (results !== null && results !== undefined) {
+      if (results[0].confidence > 0.75) {
+        this.poseLabel = results[0].lable.toUpperCase();
+        console.log("  --> poseLabel: ", results[0].lable);
+      }
     }
     this.classifyPose();
-  }
+  };
 
   // refreshing every millisecond
   draw(p) {

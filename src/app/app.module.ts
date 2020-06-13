@@ -1,3 +1,4 @@
+import { AppLayoutModule } from './shared/components/app-layout/app-layout.module';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
@@ -24,6 +25,7 @@ import { AngularFireModule } from '@angular/fire';
     BrowserAnimationsModule,
     HttpClientModule,
     CoreModule,
+    AppLayoutModule,
     SharedModule,
 
     //Firebase

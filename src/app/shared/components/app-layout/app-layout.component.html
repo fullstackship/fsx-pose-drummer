@@ -1,0 +1,30 @@
+<div [ngClass]="themeClass | async" class="fsx-app-container">
+
+  <!-- Header Above -->
+  <fsx-app-header #header class="fsx-header" *ngIf="appLayoutOptions.showHeader && appLayoutOptions.headerPos==='above'"
+    (toggleSidenav)="sidenav.toggle()" [showLogo]="true">
+  </fsx-app-header>
+
+
+  <mat-sidenav-container class="fsx-sidenav-container " autosize>
+
+    <!-- Left-side SideNav Bar  -->
+    <mat-sidenav #sidenav [ngStyle]="sideNavWidth$|async" class="fsx-sidenav mat-elevation-z4" [mode]="isOver ? 'over' : 'side'"
+      [opened]="!isXSmall" [fixedInViewport]="'true'" (openedChange)="sideNavOpenedChange($event)"
+      (closedStart)="sideNavCloseStart()">
+      <!-- SideNav Bar Menu -->
+      <fsx-app-sidebar [showSidePanel]="appLayoutOptions.showSidePanel"
+        [showHeader]="appLayoutOptions.headerPos!=='above'">
+      </fsx-app-sidebar>
+    </mat-sidenav>
+
+    <mat-sidenav-content #content class="fsx-content-wrap ">
+
+      <div class="fsx-main-content">
+        <router-outlet></router-outlet>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+
+
+</div>

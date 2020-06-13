@@ -1,0 +1,46 @@
+<mat-toolbar class="top-toolbar mat-elevation-z5"  color="primary">
+  <button mat-icon-button *ngIf="showToggle" (click)="toggleSidenav.emit()">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <!-- logo -->
+  <div *ngIf="showLogo">
+    <a class="fsx-branding" href="#/">
+      <img src="../../../../../assets/images/angular-white-transparent.svg" class="fsx-branding-logo" alt="logo" />
+      <span class="fsx-branding-name"></span>
+    </a>
+  </div>
+
+  <span fxFlex></span>
+
+  <ng-container>
+    <button mat-icon-button>
+      <mat-icon>search</mat-icon>
+    </button>
+  </ng-container>
+
+
+  <ng-container *ngIf="!(isAuthenticated$|async); else alreadyLoggedIn">
+    <a mat-button [routerLink]="['/main/user/signin']" routerLinkActive="mat-accent">
+      <mat-icon>home</mat-icon>SignIn
+    </a>
+  </ng-container>
+
+  <ng-template #alreadyLoggedIn>
+    <!-- <a mat-stroked-button [routerLink]="['/main/note/note-list']" routerLinkActive="mat-accent"><mat-icon>home</mat-icon>
+      Note List</a> -->
+
+    <a mat-stroked-button [routerLink]="['/main/note/note-manager']" routerLinkActive="mat-accent">
+      <mat-icon>add</mat-icon>
+      Note Manager
+    </a>
+    <button mat-button (click)="onSignOut()">Singout</button>
+
+
+  </ng-template>
+
+  <ng-container>
+    <mat-slide-toggle class="custom-slide-toggle" (toggleChange)="onSlideToggleChange()"></mat-slide-toggle>
+  </ng-container>
+
+</mat-toolbar>

@@ -1,5 +1,6 @@
 export enum ContentType {
   Article = 'Article',
+  AudioSound = 'AudioSound',
   Youtube = 'Youtube',
   VideoCourse = 'VideoCourse',
   PDF = 'PDF',
@@ -13,17 +14,17 @@ export enum ContentType {
 }
 
 export enum StatusLevel {
-  Temporary = 1 ,
+  Temporary = 1,
   Normal = 2,
   Important = 3,
   VIP = 4, //Very Important
 }
 
 export enum SharedSNS {
-  Twitter     = 1 << 0, //0b1
-  Facebook    = 1 << 1, //0b10
-  Youtube     = 1 << 2, //0b100
-  Instagram   = 1 << 3, //0b1000
+  Twitter = 1 << 0, //0b1
+  Facebook = 1 << 1, //0b10
+  Youtube = 1 << 2, //0b100
+  Instagram = 1 << 3, //0b1000
 
 }
 

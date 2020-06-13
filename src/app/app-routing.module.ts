@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { HomeLayoutComponent } from './pages/layout/home-layout/home-layout.component';
 
-const homeChilrdrenRoutes: Routes = [
+const userPagesRoutes: Routes = [
   {
     path: '',
     redirectTo: 'pose',
@@ -16,9 +16,7 @@ const homeChilrdrenRoutes: Routes = [
     path: 'p5',
     loadChildren: () => import('./pages/p5/p5.module').then(mod => mod.P5Module)
   },
-
 ];
-
 
 
 const routes: Routes = [
@@ -26,7 +24,7 @@ const routes: Routes = [
   {
     path: '',
     // component: HomeLayoutComponent,
-    children: homeChilrdrenRoutes
+    children: userPagesRoutes
   },
   // {
   //   path: 'admin',
@@ -36,7 +34,12 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [
+    RouterModule.forRoot(
+      routes,
+      // { enableTracing: true } // <-- debugging purposes only
+    )
+  ],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

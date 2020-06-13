@@ -1,0 +1,70 @@
+<form (ngSubmit)="save()" [formGroup]="form">
+  <div fxLayout="row" fxLayoutAlign="start center" mat-dialog-title>
+
+    <h2 *ngIf="dialogData.channelTitle" fxFlex="auto">
+      {{ dialogData.channelTitle }}</h2>
+    <h2 *ngIf="!dialogData.channelTitle" fxFlex="auto">Note Editor</h2>
+
+    <button mat-dialog-close mat-icon-button type="button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <!-- Dialog Content Start -->
+  <mat-dialog-content fxLayout="column">
+    <mat-form-field>
+      <mat-label>Title</mat-label>
+      <input formControlName="title" matInput [value]="dialogData.title">
+      <mat-icon matPrefix>edit</mat-icon>
+      <mat-error *ngIf="form.controls['title'].hasError('minlength')">Please Enter more!
+      </mat-error>
+      <mat-error *ngIf="form.controls['title'].hasError('maxlength')">Too long title!
+      </mat-error>
+      <mat-error *ngIf="form.get('title').hasError('required')">Please Type something!</mat-error>
+    </mat-form-field>
+
+
+    <mat-form-field>
+      <mat-label>Note Content</mat-label>
+      <textarea formControlName="content" matInput rows="10" placeholder="Note Content"></textarea>
+      <mat-icon matPrefix>edit</mat-icon>
+      <mat-error *ngIf="form.controls['content'].hasError('minlength')">Please Enter more than 80 characters!
+      </mat-error>
+      <mat-error *ngIf="form.get('content').hasError('required')">Please Type something!</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Content Type</mat-label>
+      <mat-select formControlName="contentType" required>
+        <mat-option *ngFor="let contentType of contentType_List" [value]=contentType>
+          {{contentType}}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('contentType').hasError('required')">Please choose a Content Type</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-chip-list #chipList aria-label="Add some Tags">
+        <mat-chip *ngFor="let tag of tags" [selectable]="chipSelectable" [removable]="chipRemovable"
+          (removed)="chipRemove(tag)">
+          {{tag}}
+          <mat-icon matChipRemove *ngIf="chipRemovable">cancel</mat-icon>
+        </mat-chip>
+        <input placeholder="New tag..." [matChipInputFor]="chipList"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="chipAddOnBlur"
+          (matChipInputTokenEnd)="chipAdd($event)">
+      </mat-chip-list>
+      <mat-error *ngIf="form.get('tags').invalid">Please enter some tags</mat-error>
+    </mat-form-field>
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button mat-button mat-dialog-close type="button">CANCEL</button>
+    <button *ngIf="isCreateMode()" color="primary" mat-button type="submit">CREATE</button>
+    <button *ngIf="isUpdateMode()" color="primary" mat-button type="submit">SAVE</button>
+  </mat-dialog-actions>
+
+</form>

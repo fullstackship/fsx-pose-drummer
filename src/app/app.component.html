@@ -1,1 +1,6 @@
-<router-outlet></router-outlet>
+<ng-container *ngIf="showApppLayout;else otherLayout">
+  <fsx-app-layout></fsx-app-layout>
+</ng-container>
+<ng-template #otherLayout>
+  <router-outlet></router-outlet>
+</ng-template>
