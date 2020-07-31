@@ -19,9 +19,7 @@ export class CountdownComponent implements OnInit {
     private dialogRef: MatDialogRef<CountdownComponent>,
     private dialog: MatDialog,
     private countDownSV: CountdownService
-  ) {
-
-  }
+  ) { }
 
   ngOnInit(): void {
     if (this.dialogData) {
@@ -60,7 +58,6 @@ export class CountdownComponent implements OnInit {
 
   onClose() {
     this.onClear();
-    // this.dialogRef.close()
   }
 
   ngOnDestroy() {

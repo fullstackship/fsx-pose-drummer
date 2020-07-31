@@ -307,26 +307,15 @@ export class PoseDrummerComponent implements OnInit {
 
     const capturedImage = this.snapCanvas.nativeElement.toDataURL('image/png');
 
-    // console.log("currComponentRef: ", this.currComponentRef);
-    // console.log("capturedImage: ", capturedImage);
     (<DynamicComp>this.currComponentRef.instance).capturedImage = capturedImage;
 
     const changes = {
       capturedImage: new SimpleChange('', capturedImage, false)
     };
 
-    // this.currComponentRef.instance.ngOnChanges(changes);
-
-
-    // this.capturedImages.push(capturedImage);
-
-    // because live video update on the canvas stop
-    // this.video = this.p5.createCapture(this.p5.VIDEO);
-    // this.video.hide();
   }
 
   addPoseTrainDataComp() {
-
 
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.dynamicComponent);
     const viewContainerRef = this.anchor.viewContainerRef;
@@ -341,7 +330,6 @@ export class PoseDrummerComponent implements OnInit {
         this.autoCollectData();
       }
     );
-
   }
 
 
@@ -356,8 +344,7 @@ export class PoseDrummerComponent implements OnInit {
     this.notiSV.success("Training Finished!");
     console.log('The Model is trained!');
     console.log("  -->this.nn: ", this.nn);
-    // this.nn.save();
-    // this.classifyPose();
+
   };
 
 
