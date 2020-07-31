@@ -2,7 +2,7 @@ import { Component, OnInit, ElementRef } from '@angular/core';
 import * as p5 from 'p5';
 
 @Component({
-  selector: 'app-p5-play',
+  selector: 'fsx-p5-play',
   templateUrl: './p5-play.component.html',
   styleUrls: ['./p5-play.component.scss']
 })

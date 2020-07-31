@@ -3,7 +3,6 @@ import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms'
 import { SoundFileData } from '@app/core/models';
 import { b64toBlob } from '@app/shared/utils/mediaUtils';
 import { ContentType } from '@app/core/models/enums';
-import { Mediafile } from '@app/core/models/mediafile';
 import { MatDialog, MatDialogConfig, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { NotifyService } from '@app/core/services/notify.service';
 import { AngularFirestore } from '@angular/fire/firestore';
@@ -13,9 +12,12 @@ import { tap, finalize } from 'rxjs/operators';
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
 import { NotificationService } from '@app/shared/services/notification.service';
 import { AuthFireService } from '@app/core/services/firebase/fire.auth.service';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { MediaFireService } from '../service/media-fire.service';
+import { Media } from '@app/core/models/media';
 
 @Component({
-  selector: 'app-sound-uploader',
+  selector: 'fsx-sound-uploader',
   templateUrl: './sound-uploader.component.html',
   styleUrls: ['./sound-uploader.component.scss']
 })
@@ -48,7 +50,7 @@ export class SoundUploaderComponent implements OnInit {
   files: File[] = [];
   selectedFiles: File[] = [];
   soundFileData: SoundFileData[] = [];
-  uploadedFiles: Mediafile[] = [];
+  uploadedFiles: Media[] = [];
 
 
   isLoading = false;
@@ -56,7 +58,7 @@ export class SoundUploaderComponent implements OnInit {
   form: FormGroup;
   mode: 'create' | 'update' = 'create';
 
-  media: Mediafile = new Mediafile();
+  media: Media = new Media();
   private uid: string;
   contentType_List;
 
@@ -77,6 +79,7 @@ export class SoundUploaderComponent implements OnInit {
     private el: ElementRef,
     private notificationService: NotificationService,
     private fireAuthSV: AuthFireService,
+    public mediaFireSV: MediaFireService,
     private storage: AngularFireStorage,
     private db: AngularFirestore,
     private cdr: ChangeDetectorRef,
@@ -85,6 +88,7 @@ export class SoundUploaderComponent implements OnInit {
 
   }
   ngOnInit() {
+
     this.form = new FormGroup({
       title: new FormControl(null, {
         validators: [Validators.required, Validators.minLength(3)]
@@ -100,7 +104,7 @@ export class SoundUploaderComponent implements OnInit {
 
     this.contentType_List = Object.keys(ContentType);
 
-    this.notifySV.notifyObs$.subscribe((uploadedFile: Mediafile) => {
+    this.notifySV.notifyObs$.subscribe((uploadedFile: Media) => {
       console.log("  -->uploadedFile: ", uploadedFile);
       this.uploadedFiles = [...this.uploadedFiles, uploadedFile];
       // this.uploadedFiles.push(uploadedFile)
@@ -180,6 +184,113 @@ export class SoundUploaderComponent implements OnInit {
     return item.file.name;
   }
 
+  async save() {
+
+    console.log('form.value: ', this.form.value);
+    if (this.form.invalid) {
+      // TODO: find the invalid form control
+      console.log("form invalid!!!");
+      return;
+    }
+
+
+    if (!this.uid) {
+      this.uid = await this.fireAuthSV.getCurrentUser$().then((user) => {
+        return user.uid;
+      });
+    }
+
+    let mediaData: Media = {
+      'username': 'author',
+      'uid': this.uid,
+      ...this.form.value
+    };
+
+
+    if (this.mode === 'create') {
+      this.mediaFireSV.addMedia(mediaData).subscribe((res) => {
+
+      });
+    } else if (this.mode === 'update') {
+      mediaData.id = this.dialogData.id;
+      this.mediaFireSV.updateMedia(mediaData).subscribe((res) => {
+
+      });
+    }
+
+    this.dialogRef.close(mediaData);
+  }
+
+  closeDialog() {
+    this.onClear();
+    this.dialogRef.close(this.media);
+  }
+
+
+  chipAdd(event: MatChipInputEvent): void {
+    const input = event.input;
+    const value = event.value;
+    console.log(" chipAdd|tags: ", this.tags);
+    console.log(" chipAdd|input: ", input, " ,  value: ", value);
+
+    if (!this.tags) {
+      this.form.get('tags').setValue([]);
+      this.tags = this.form.get('tags').value;
+
+    }
+    if ((value || '').trim()) {
+      this.tags.push(value.trim());
+    }
+
+    if (input) {
+      input.value = '';
+    }
+  }
+
+  chipRemove(tag: string): void {
+    const index = this.tags.indexOf(tag);
+
+    if (index >= 0) {
+      this.tags.splice(index, 1);
+    }
+  }
+
+  isCreateMode() {
+    return this.mode === 'create';
+  }
+
+  isUpdateMode() {
+    return this.mode === 'update';
+  }
+
+  initializeFormGroup() {
+    this.form.setValue({
+      title: '',
+      subtitle: '',
+      url: '',
+      tags: [''],
+    });
+  }
+
+  onClear(msg: String = '') {
+    this.form.reset();
+    this.initializeFormGroup();
+    if (msg != '') this.notificationService.success(msg);
+  }
+
+  onClose() {
+    this.onClear();
+    // this.dialogRef.close()
+  }
+
+
+
+  /************************************************************************
+   *  Media Upload Part
+   *
+   *
+   */
+
   resetUpload() {
     this.form.reset();
     this.soundFileData = [];
@@ -228,7 +339,7 @@ export class SoundUploaderComponent implements OnInit {
                 path: path,
                 createdAt: new Date().getTime(),
                 ...this.form.value
-              } as Mediafile;
+              } as Media;
 
               console.log("  --> mediaObj: ", mediaObj);
 
@@ -277,7 +388,7 @@ export class SoundUploaderComponent implements OnInit {
 
             downloadURL: this.downloadURL,
             path: path
-          } as Mediafile;
+          } as Media;
           this.db.collection('files').add(mediaObj);
           this.showControl = false;
           this.doManualCD();

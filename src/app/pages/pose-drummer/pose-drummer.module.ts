@@ -6,15 +6,19 @@ import { PoseDrummerRoutingModule } from './pose-drummer-routing.module';
 import { PoseDrummerComponent } from './pose-drummer/pose-drummer.component';
 import { NgxJsonViewModule } from 'ng-json-view';
 import { PoseTrainDataComponent } from './pose-train-data/pose-train-data.component';
+import { CountdownComponent } from './countdown/countdown.component';
 
 @NgModule({
-  declarations: [PoseDrummerComponent, PoseTrainDataComponent],
+  declarations: [PoseDrummerComponent, PoseTrainDataComponent, CountdownComponent],
   imports: [
     CommonModule,
     PoseDrummerRoutingModule,
     SharedModule,
     NgxJsonViewModule
   ],
-  entryComponents: [PoseTrainDataComponent]
+  entryComponents: [
+    PoseTrainDataComponent,
+    CountdownComponent
+  ]
 })
 export class PoseDrummerModule { }

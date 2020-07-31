@@ -1,18 +1,18 @@
 import { ContentType } from './enums';
 import { Collection } from './collection';
 
-export class Mediafile {
+export class Media {
 
   id: string;
   mediaType: string; //image,youtube,pdf,audio,video
-  MediafileData?: Mediafile;
+  MediafileData?: Media;
   fileObj?: File;
   title?: string;
   subtitle?: string;
   url?: string;
   shorturl?: string;
   content?: string;
-  userId?: string;
+  uid?: string
   username?: string;
   isDone?: boolean = false;
   totalLikes?: number;
@@ -24,8 +24,8 @@ export class Mediafile {
   collections?: Collection[];
   tags?: string[];
   is_published?: boolean;
-  createdAt?: number;
-  updatedAt?: number;
+  createdAt?: any;
+  updatedAt?: any;
   extra?: any;
 
 }

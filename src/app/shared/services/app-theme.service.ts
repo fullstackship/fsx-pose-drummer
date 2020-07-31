@@ -8,7 +8,7 @@ import { OverlayContainer } from '@angular/cdk/overlay';
 })
 export class AppThemeSwitcherService {
   previousClass = '';
-  initialClass = 'custom-material-light-theme';
+  initialClass = 'custom-material-dark-theme';
   colorClass$: BehaviorSubject<string> = new BehaviorSubject(this.initialClass);
   constructor(private overlayContainer: OverlayContainer) {
     const storageClass = localStorage.getItem('theme-switcher');

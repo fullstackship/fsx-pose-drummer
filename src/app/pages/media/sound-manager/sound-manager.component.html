@@ -1,1 +1,113 @@
-<p>sound-manager works!</p>
+<mat-card class="table-container-wrapper">
+  <div class="table-container mat-elevation-z8">
+
+
+    <!-- Table Header -->
+    <div class="table-body" fxLayout="row" fxLayoutAlign="start center">
+
+      <mat-form-field>
+        <mat-label>Search</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Search...">
+      </mat-form-field>
+
+      <span fxFlex></span>
+
+      <button fxHide.gt-xs mat-icon-button type="button">
+        <mat-icon>home</mat-icon>
+      </button>
+
+      <button [matMenuTriggerFor]="columnFilterMenu" mat-icon-button matTooltip="Filter Columns" type="button"
+        [ngStyle]="{'padding-right':'50px'}">
+        <mat-icon>filter_list</mat-icon>
+      </button>
+
+      <button button="submit" mat-raised-button color="warn" (click)="createItem()">
+        <mat-icon>create</mat-icon>Add Media
+      </button>
+    </div>
+
+    <table [dataSource]="dataSource" class="full-width-table" mat-table matSort aria-label="DataTable">
+
+      <!-- Checkbox Column -->
+      <ng-container matColumnDef="checkbox">
+        <th *matHeaderCellDef mat-header-cell>
+          <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
+            [indeterminate]="selection.hasValue() && !isAllSelected()" color="primary">
+          </mat-checkbox>
+        </th>
+        <td *matCellDef="let row" mat-cell>
+          <mat-checkbox (change)="$event ? selection.toggle(row) : null" (click)="$event.stopPropagation()"
+            [checked]="selection.isSelected(row)" color="primary">
+          </mat-checkbox>
+        </td>
+      </ng-container>
+
+
+      <!-- Text Columns -->
+      <ng-container *ngFor="let column of columns; trackBy: trackByProperty">
+        <ng-container *ngIf="column.type === 'text'" [matColumnDef]="column.property">
+          <th *matHeaderCellDef class="uppercase" mat-header-cell mat-sort-header>
+            {{ column.label }}
+          </th>
+          <td *matCellDef="let row" [ngClass]="column.cssClasses" mat-cell>
+            <ng-template [ngIf]="column.property === 'createdAt'" [ngIfElse]=" nonDateColumns">
+              <ng-container *ngIf="row[column.property]">
+                {{row[column.property].toDate()|date}}
+              </ng-container>
+            </ng-template>
+            <ng-template #nonDateColumns>
+              {{ row[column.property]}}
+            </ng-template>
+          </td>
+        </ng-container>
+      </ng-container>
+
+
+      <!-- Action Column -->
+      <ng-container matColumnDef="actions">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>
+          Actions
+        </th>
+        <td *matCellDef="let row" class="w-10 text-secondary" mat-cell>
+          <button (click)="$event.stopPropagation()" [matMenuTriggerData]="{ item: row }"
+            [matMenuTriggerFor]="actionsMenu" mat-icon-button type="button">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr *matHeaderRowDef="visibleColumns" mat-header-row></tr>
+      <tr (click)="updateItem(row)" *matRowDef="let row; columns: visibleColumns;" mat-row></tr>
+    </table>
+
+    <mat-paginator #paginator [length]="dataSource?.data.length" [pageIndex]="0" [pageSizeOptions]="pageSizeOptions"
+      [pageSize]="pageSize" class="sticky left-0">
+    </mat-paginator>
+  </div>
+
+
+
+
+  <mat-menu #columnFilterMenu="matMenu" xPosition="before" yPosition="below">
+    <button (click)="toggleColumnVisibility(column, $event)" *ngFor="let column of columns"
+      class="checkbox-item mat-menu-item">
+      <mat-checkbox (click)="$event.stopPropagation()" [(ngModel)]="column.visible" color="primary">
+        {{ column.label }}
+      </mat-checkbox>
+    </button>
+  </mat-menu>
+
+  <mat-menu #actionsMenu="matMenu" xPosition="before" yPosition="below">
+    <ng-template let-item="item" matMenuContent>
+      <button (click)="updateItem(item)" mat-menu-item>
+        <mat-icon>create</mat-icon>
+        <span>Modify</span>
+      </button>
+      <button (click)="deleteItem(item)" mat-menu-item>
+        <mat-icon>delete_forever</mat-icon>
+        <span>Delete</span>
+      </button>
+    </ng-template>
+  </mat-menu>
+</mat-card>
+<fsx-fixed-drag-btn (click)="fixedBtnClicked()"></fsx-fixed-drag-btn>

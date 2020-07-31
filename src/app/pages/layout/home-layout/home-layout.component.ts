@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 
 @Component({
-  selector: 'app-home-layout',
+  selector: 'fsx-home-layout',
   templateUrl: './home-layout.component.html',
   styleUrls: ['./home-layout.component.scss']
 })

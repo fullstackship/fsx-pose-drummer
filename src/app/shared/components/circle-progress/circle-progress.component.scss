@@ -1,0 +1,29 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.circle-progress-container {
+
+  padding: 30px;
+  // margin: 30px;
+
+  .h1 {
+    color: rgb(255, 187, 0);
+  }
+
+  .circle-progress {
+    stroke: rgb(124, 255, 2);
+    transform: rotate(-90deg);
+    transition: stroke-dashoffset 0.25s;
+    transform-origin: 50% 50%;
+  }
+
+  .percentage-text {
+    fill: rgb(255, 0, 242);
+  }
+
+  .countdown-text {
+    fill: rgb(0, 255, 221);
+  }
+}

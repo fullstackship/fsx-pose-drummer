@@ -1,12 +1,26 @@
 import { PoseTrainDataComponent } from './../pose-train-data/pose-train-data.component';
 import { Component, OnInit, ElementRef, NgZone, ViewChild, ChangeDetectionStrategy, Output, EventEmitter, ComponentFactoryResolver, SimpleChanges, SimpleChange } from '@angular/core';
-import * as p5 from 'p5';
 import { DynamicComp } from '../dynamicComp';
 import { AnchorDirective } from '@app/shared/components/anchor.directive';
+import { NotificationService } from '@app/shared/services/notification.service';
+//p5 library
+import * as p5 from 'p5';
+import { HTMLAudioService } from '@app/core/services/htmlAudio.service';
+
 declare let ml5: any;
 
+
+/**
+ *
+ * PoseDrummer Component
+ * Please report issues : https://github.com/fullstackship/fsx-pose-drummer
+ *
+ * @Author : Fullstackship.com
+ *
+ */
+
 @Component({
-  selector: 'app-pose-drummer',
+  selector: 'fsx-pose-drummer',
   templateUrl: './pose-drummer.component.html',
   styleUrls: ['./pose-drummer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,7 +44,7 @@ export class PoseDrummerComponent implements OnInit {
   nn;
   poseLabel = "";
 
-  state = 'wating-to-collect';
+  currState = 'wating-to-collect';
   targetLabel;
 
   /* NeuralNetwork Options */
@@ -44,26 +58,44 @@ export class PoseDrummerComponent implements OnInit {
   currComponentRef;
   currData; //data from PoseTrainDataComponent
 
+  //Audio
+  files: Array<any> = [];
+  state;
+  currentFile: any = {};
+
+
   @ViewChild('video', { static: true }) public videoEl: ElementRef;
   @ViewChild('p5Container', { static: true }) p5Container: ElementRef;
   @ViewChild('snapCanvas', { static: false }) snapCanvas: ElementRef;
 
   constructor(
+    private notiSV: NotificationService,
     private componentFactoryResolver: ComponentFactoryResolver,
-    private zone: NgZone) {
-
+    private zone: NgZone,
+    private webAudioSV: HTMLAudioService
+  ) {
+    // listen to stream state
+    this.webAudioSV.getState()
+      .subscribe(state => {
+        this.state = state;
+      });
   };
 
   ngOnInit(): void {
-    new p5(this.sketch(), this.p5Container.nativeElement);
+
   };
 
   ngAfterViewInit() {
+    new p5(this.sketch(), this.p5Container.nativeElement);
+
+
+  }
+
+  ngAfterContentInit(): void {
 
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-
   }
 
   ngOnDestroy(): void {
@@ -72,15 +104,17 @@ export class PoseDrummerComponent implements OnInit {
     if (this.nn !== null && this.nn !== undefined) {
       this.nn.dispose();
     }
-
-
-
   }
 
   sketch() {
     return p5 => {
       p5.setup = () => {
         this.setup(p5);
+
+      };
+
+      p5.preload = () => {
+
       };
 
       p5.draw = () => {
@@ -131,12 +165,18 @@ export class PoseDrummerComponent implements OnInit {
     this.video.hide();
 
     console.log("webkitURL: ", webkitURL);
+
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
         this.videoEl.nativeElement.srcObject = stream;
         this.videoEl.nativeElement.play();
-      });
+      })
+        .catch((err) => {
+          console.log("getUserMedia Error occred: ", err);
+        });
     }
+
+
 
     this.poseNet = ml5.poseNet(this.video, this.modelLoaded);
 
@@ -147,7 +187,7 @@ export class PoseDrummerComponent implements OnInit {
       if (poses.length > 0) {
         this.pose = poses[0].pose;
         this.skeleton = poses[0].skeleton;
-        if (this.state == 'collecting-data') {
+        if (this.currState == 'collecting-data') {
           this.SnapshotCanvas();
           let inputs = [];
           for (let i = 0; i < this.pose.keypoints.length; i++) {
@@ -157,23 +197,17 @@ export class PoseDrummerComponent implements OnInit {
             inputs.push(y);
           }
           let target = [this.currData.targetLabel];
-          console.log('inputs.length :' + inputs.length);
           // https://github.com/ml5js/ml5-library/blob/development/src/NeuralNetwork/index.js#L166
           this.nn.addData(inputs, target);
+
         }
       }
     });
 
     this.createNewNN();
 
-    //Load Pretrained Model
-    // this.loadPretrainedModel();
-
-    //Load Data To train
-    // this.loadData();
-
-
   }
+
 
   createNewNN() {
 
@@ -230,12 +264,9 @@ export class PoseDrummerComponent implements OnInit {
     }, this.trainFinished);
   }
 
-
-
   downloadModel() {
     this.nn.saveData();
   }
-
 
 
   captureCanvas() {
@@ -246,22 +277,24 @@ export class PoseDrummerComponent implements OnInit {
     console.log('targetLabel: ', this.currData.targetLabel);
 
     setTimeout(() => {
+      this.notiSV.success("Start Collecting!");
       console.log('Collecting Data...');
-      this.state = 'collecting-data';
+      this.currState = 'collecting-data';
       setTimeout(() => {
         console.log('Not Collecting Data!');
-        this.state = 'wating-to-collect';
-        console.log(" --> this.nn : ", this.nn);
+        this.currState = 'wating-to-collect';
         console.log(" --> this.nn.neuralNetworkData.data : ", this.nn.neuralNetworkData.data);
+        this.notiSV.success("Successfully collected the training data!");
         this.updateJsonData();
       }, 5000);
-    }, 2500);
+    }, 100);
   }
 
   updateJsonData() {
     this.nn_data = JSON.parse(JSON.stringify(Object.assign({}, this.nn.neuralNetworkData.data.raw)));
     // console.log("nn_data: ", this.nn_data);
   }
+
 
 
   SnapshotCanvas() {
@@ -293,11 +326,13 @@ export class PoseDrummerComponent implements OnInit {
   }
 
   addPoseTrainDataComp() {
+
+
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.dynamicComponent);
     const viewContainerRef = this.anchor.viewContainerRef;
     // viewContainerRef.clear();
     const componentRef = viewContainerRef.createComponent(componentFactory);
-
+    /* Subscribe an event from a Dynamic Component(PoseTrainDataComponent)  */
     (componentRef.instance as DynamicComp).event.subscribe(
       data => {
         console.log(" data from DynamicComp: ", data);
@@ -311,12 +346,14 @@ export class PoseDrummerComponent implements OnInit {
 
 
   startTraining() {
-    this.nn.normalizeData();
+    this.notiSV.success("Start Training!");
     console.log("  -->this.nn: ", this.nn);
+    this.nn.normalizeData();
     this.nn.train({ epochs: 50 }, this.trainFinished);
   }
 
   trainFinished = () => {
+    this.notiSV.success("Training Finished!");
     console.log('The Model is trained!');
     console.log("  -->this.nn: ", this.nn);
     // this.nn.save();
@@ -346,15 +383,53 @@ export class PoseDrummerComponent implements OnInit {
 
 
   gotResult = (err, results) => {
-    console.log("gotResult: ", results);
-    if (results !== null && results !== undefined) {
+    // console.log("gotResult: ", results);
+    if (results && results.length > 0) {
       if (results[0].confidence > 0.75) {
-        this.poseLabel = results[0].lable.toUpperCase();
-        console.log("  --> poseLabel: ", results[0].lable);
+        const currPose = results[0].label.toUpperCase();
+        console.log("  --> poseLabel: ", currPose);
+        this.playSound(currPose);
       }
     }
     this.classifyPose();
   };
+
+  // TODO: Upgrade to RXJS version and 'hard-coding' labels
+  playSound(currPose: string) {
+    // console.log("  --> currPose: ", currPose, " | this.poseLabel: ", this.poseLabel);
+
+    const audio1 = 'assets/audio/wav/crash1.wav';
+    const audio2 = 'assets/audio/wav/glass1.wav';
+    const audio3 = 'assets/audio/wav/snare1.wav';
+
+    if (this.poseLabel != currPose) {
+      if (currPose == 'POSE1') {
+        this.playPoseAudio(audio1);
+      } else if (currPose == 'POSE2') {
+        this.playPoseAudio(audio2);
+      } else if (currPose == 'POSE3') {
+        this.playPoseAudio(audio3);
+      }
+    }
+
+    this.poseLabel = currPose;
+  }
+
+  playPoseAudio(audioSrc: string) {
+    console.log("  --> playPoseAudio: ", audioSrc);
+    this.stop();
+    this.playStream(audioSrc);
+    this.play();
+  }
+
+
+  audioPlayTest() {
+    this.stop();
+    this.playStream('assets/audio/wav/glass1.wav');
+    this.play();
+  }
+
+
 
   // refreshing every millisecond
   draw(p) {
@@ -390,11 +465,68 @@ export class PoseDrummerComponent implements OnInit {
 
     this.p5.fill(255, 0, 255);
     this.p5.noStroke();
-    this.p5.textSize(512);
+    this.p5.textSize(100);
     this.p5.textAlign(this.p5.CENTER, this.p5.CENTER);
     //this.p5.width/height : System variable that stores the width of the drawing canvas. This value is set by the first parameter of the createCanvas() function.
     this.p5.text(this.poseLabel, this.p5.width / 2, this.p5.height / 2);
 
 
   }
+
+
+
+  /**
+   * Audio Part
+   *
+   */
+
+  playStream(url) {
+    this.webAudioSV.playStream(url)
+      .subscribe(events => {
+        // listening for fun here
+      });
+  }
+
+  openFile(file, index) {
+    this.currentFile = { index, file };
+    this.webAudioSV.stop();
+    this.playStream(file.url);
+  }
+
+  pause() {
+    this.webAudioSV.pause();
+  }
+
+  play() {
+    this.webAudioSV.play();
+  }
+
+  stop() {
+    this.webAudioSV.stop();
+  }
+
+  next() {
+    const index = this.currentFile.index + 1;
+    const file = this.files[index];
+    this.openFile(file, index);
+  }
+
+  previous() {
+    const index = this.currentFile.index - 1;
+    const file = this.files[index];
+    this.openFile(file, index);
+  }
+
+  isFirstPlaying() {
+    return this.currentFile.index === 0;
+  }
+
+  isLastPlaying() {
+    return this.currentFile.index === this.files.length - 1;
+  }
+
+  onSliderChangeEnd(change) {
+    this.webAudioSV.seekTo(change.value);
+  }
+
 }

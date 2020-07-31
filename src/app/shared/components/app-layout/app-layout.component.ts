@@ -26,7 +26,7 @@ export class AppLayoutComponent implements OnInit {
     showSidePanel: true,
     sideNavOpened: true,
     sideNavCollapsed: false,
-    theme: 'light',
+    theme: 'dark',
     dir: 'ltr'
   };
 
@@ -65,7 +65,7 @@ export class AppLayoutComponent implements OnInit {
     private layoutSV: ResponsiveLayoutService
   ) {
 
-    this.appThemeSwitcherSV.setColorClass('custom-material-light-theme');
+    this.appThemeSwitcherSV.setColorClass('custom-material-dark-theme');
     this.themeClass = this.appThemeSwitcherSV.getColorClass();
   }
 

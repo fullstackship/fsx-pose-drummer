@@ -4,6 +4,10 @@
   display: block;
   position: relative;
 
+  .card-container-wrapper {
+    margin: 15px;
+  }
+
   .card-container {
     // min-width: $card-min-width;
     // max-width: $card-max-width;
@@ -25,9 +29,7 @@
   }
 }
 
-.card-container-wrapper {
-  margin: 15px;
-}
+
 
 .mat-card-actions,
 .mat-card-subtitle,

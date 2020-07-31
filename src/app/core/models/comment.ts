@@ -4,5 +4,6 @@ export class Comment {
   userId: string
   username: string
 	content: string
-	createdAt?: Date
+	createdAt?: any;
+  updatedAt?: any;
 }

@@ -1,4 +1,4 @@
-<div [ngClass]="themeClass | async" class="fsx-app-container">
+<div class="fsx-app-container" [ngClass]="themeClass | async">
 
   <!-- Header Above -->
   <fsx-app-header #header class="fsx-header" *ngIf="appLayoutOptions.showHeader && appLayoutOptions.headerPos==='above'"
@@ -6,12 +6,12 @@
   </fsx-app-header>
 
 
-  <mat-sidenav-container class="fsx-sidenav-container " autosize>
+  <mat-sidenav-container class="fsx-sidenav-container" autosize>
 
     <!-- Left-side SideNav Bar  -->
-    <mat-sidenav #sidenav [ngStyle]="sideNavWidth$|async" class="fsx-sidenav mat-elevation-z4" [mode]="isOver ? 'over' : 'side'"
-      [opened]="!isXSmall" [fixedInViewport]="'true'" (openedChange)="sideNavOpenedChange($event)"
-      (closedStart)="sideNavCloseStart()">
+    <mat-sidenav #sidenav [ngStyle]="sideNavWidth$|async" class="fsx-sidenav mat-elevation-z4"
+      [mode]="isOver ? 'over' : 'side'" [opened]="!isXSmall" [fixedInViewport]="'true'"
+      (openedChange)="sideNavOpenedChange($event)" (closedStart)="sideNavCloseStart()">
       <!-- SideNav Bar Menu -->
       <fsx-app-sidebar [showSidePanel]="appLayoutOptions.showSidePanel"
         [showHeader]="appLayoutOptions.headerPos!=='above'">

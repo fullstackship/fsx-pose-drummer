@@ -11,12 +11,47 @@
   left: 0;
   right: 0;
   // padding-top: 64px;
+}
 
+.custom-material-light-theme .fsx-sidenav-container{
+  background: linear-gradient(
+      210deg,
+      hsla(148, 70%, 59%, 1) 0%,
+      hsla(148, 70%, 59%, 0) 25%
+    ),
+    linear-gradient(
+      250deg,
+      hsla(207, 52%, 75%, 1) 10%,
+      hsla(207, 52%, 75%, 0) 55%
+    ),
+    linear-gradient(333deg, hsla(50, 90%, 77%, 1) 0%, hsla(50, 90%, 77%, 0) 30%),
+    linear-gradient(5deg, hsla(3, 83%, 75%, 1) 0%, hsla(3, 83%, 75%, 0) 40%),
+    linear-gradient(
+      15deg,
+      hsla(340, 93%, 65%, 1) 25%,
+      hsla(340, 93%, 65%, 0) 80%
+    ),
+    linear-gradient(
+      240deg,
+      hsla(263, 70%, 59%, 1) 100%,
+      hsla(263, 70%, 59%, 0) 75%
+    );
+}
+
+.custom-material-dark-theme .fsx-sidenav-container{
+  // background: rgb(77, 36, 121);
+  background: linear-gradient(
+    135deg,
+    rgb(106, 28, 158) 0%,
+    rgba(30, 6, 50, 1) 30%,
+    rgba(10, 6, 50, 1) 50%,
+    rgba(70, 6, 50, 1) 70%,
+    rgb(189, 14, 116) 100%
+  );
 }
 
 .fsx-sidenav {
   padding-top: 64px;
-
 }
 
 .fsx-header {
@@ -25,10 +60,7 @@
   left: 0;
   z-index: 1000;
   width: 100% !important;
-
 }
-
-
 
 .fsx-content-wrap,
 fsx-main-content {

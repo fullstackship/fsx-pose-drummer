@@ -1,0 +1,15 @@
+<!-- https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-dasharray -->
+<div class="circle-progress-container">
+  <h1 style="color:rgb(255, 187, 0);">Pose for colleting</h1>
+  <svg viewBox="0, 0, 100, 100">
+    <circle class="circle-progress" stroke-width="6" fill="transparent" r="45" cx="50" cy="50"
+      [style.strokeDasharray]="circumference" [style.strokeDashoffset]="strokeDashOffset" />
+
+    <ng-container *ngIf="displayStyle === 'percentage'; else countDown">
+      <text x="50" y="50" class="percentage-text" text-anchor="middle">{{(progressValue) + '%'}}</text>
+    </ng-container>
+    <ng-template #countDown>
+      <text x="50" y="50" class="countdown-text" font-size="2em" text-anchor="middle">{{(progressValue)}}</text>
+    </ng-template>
+  </svg>
+</div>

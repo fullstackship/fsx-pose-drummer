@@ -11,6 +11,7 @@ import { MaterialModule } from './material.module';
 import { AngularFirebaseModule } from './angularfire.module';
 import { AnchorDirective } from './components/anchor.directive';
 import { FixedDragBtnComponent } from './components/fixed-drag-btn/fixed-drag-btn.component';
+import { CircleProgressComponent } from './components/circle-progress/circle-progress.component';
 
 
 const SHARED_MODULES = [
@@ -27,7 +28,8 @@ const SHARED_MODULES = [
 const SHARED_COMPONENTS = [
   ErrorComponent,
   AnchorDirective,
-  FixedDragBtnComponent
+  FixedDragBtnComponent,
+  CircleProgressComponent
 ];
 
 const SHARED_PIPES = [

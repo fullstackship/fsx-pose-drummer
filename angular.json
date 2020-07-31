@@ -12,7 +12,7 @@
       },
       "root": "",
       "sourceRoot": "src",
-      "prefix": "app",
+      "prefix": "fsx",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
@@ -29,9 +29,10 @@
               "src/styles.scss"
             ],
             "scripts": [
-              // "node_modules/ml5/dist/ml5.min.js",
-              "node_modules/ml5/dist/ml5.js", //only for Debugging
-              "node_modules/p5/lib/p5.js"
+              "node_modules/ml5/dist/ml5.min.js",
+              // "node_modules/ml5/dist/ml5.js", //only for Debugging
+              "node_modules/p5/lib/p5.min.js"
+
             ]
           },
           "configurations": {

@@ -1,11 +1,22 @@
 // Define a custom Material theme
 // https://material.angular.io/guide/theming
 
+/**
+ [Define a custom Material theme]
+  https://material.angular.io/guide/theming
+- A primary palette: colors most widely used across all screens and components.
+- An accent palette: colors used for the floating action button and interactive elements.
+- A warn palette: colors used to convey error state.
+- A foreground palette: colors for text and icons.
+- A background palette: colors used for element backgrounds.
+**/
+
+
 @import "~@angular/material/theming";
 
 $typography: mat-typography-config(
   $font-family: "Roboto, monospace",
-  $headline: mat-typography-level(32px, 48px, 700)
+  $headline: mat-typography-level(32px, 48px, 700),
 );
 
 @include mat-core($typography);
@@ -39,19 +50,19 @@ $md-custom-pink-color: (
     A100: #000000,
     A200: #ffffff,
     A400: #ffffff,
-    A700: #ffffff
-  )
+    A700: #ffffff,
+  ),
 );
 
-$custom-material-theme-primary: mat-palette($mat-indigo);
-$custom-material-theme-accent: mat-palette($mat-orange, 800, A100, A400);
-$custom-material-theme-warn: mat-palette($mat-red, 600);
-$custom-material-theme-pink: mat-palette($md-custom-pink-color);
+$custom-material-theme-light-primary: mat-palette($mat-indigo);
+$custom-material-theme-light-accent: mat-palette($mat-orange, 800, A100, A400);
+$custom-material-theme-light-warn: mat-palette($mat-red, 600);
+$custom-material-theme-light-pink: mat-palette($md-custom-pink-color);
 
 $custom-material-light-theme: mat-light-theme(
-  $custom-material-theme-primary,
-  $custom-material-theme-accent,
-  $custom-material-theme-warn
+  $custom-material-theme-light-primary,
+  $custom-material-theme-light-accent,
+  $custom-material-theme-light-pink
 );
 
 $custom-material-theme-dark-primary: mat-palette($mat-deep-purple);
@@ -65,14 +76,112 @@ $custom-material-dark-theme: mat-dark-theme(
   $custom-material-theme-dark-warn
 );
 
+
+
+$custom-light-theme-foreground: (
+  base: yellow,
+  divider: $white-12-opacity,
+  dividers: $white-12-opacity,
+  disabled: rgba(white, 0.3),
+  disabled-button: rgba(white, 0.3),
+  disabled-text: rgba(white, 0.3),
+  hint-text: rgba(white, 0.3),
+  secondary-text: rgba(white, 0.7),
+  icon: white,
+  icons: white,
+  text: rgb(249, 208, 253),
+  slider-min: white,
+  slider-off: rgba(white, 0.3),
+  slider-off-active: rgba(white, 0.3),
+);
+
+$custom-light-theme-background: (
+  status-bar: green,
+  app-bar:    map_get($mat-blue, 900),
+  background: orange,
+  hover:      rgba(white, 0.04),
+  card:       hsla(340, 93%, 65%, 1) 25%,
+  dialog:     map_get($mat-grey, 800),
+  disabled-button: $white-12-opacity,
+  raised-button: map-get($mat-grey, 800),
+  focused-button: $white-6-opacity,
+  selected-button: map_get($mat-grey, 900),
+  selected-disabled-button: map_get($mat-grey, 800),
+  disabled-button-toggle: black,
+  unselected-chip: map_get($mat-grey, 700),
+  disabled-list-option: black,
+);
+
+$custom-dark-theme-foreground: (
+  base: rgb(14, 132, 148),
+  divider: $white-12-opacity,
+  dividers: $white-12-opacity,
+  disabled: rgba(white, 0.3),
+  disabled-button: rgba(white, 0.3),
+  disabled-text: rgba(white, 0.3),
+  hint-text: rgba(white, 0.3),
+  secondary-text: rgba(white, 0.7),
+  icon: white,
+  icons: white,
+  text: rgb(221, 109, 216),
+  slider-min: white,
+  slider-off: rgba(white, 0.3),
+  slider-off-active: rgba(white, 0.3),
+);
+
+$custom-dark-theme-background: (
+  status-bar: green,
+  app-bar:    map_get($mat-blue, 900),
+  background: orange,
+  hover:      rgba(white, 0.04),
+  card:       #7B1FA2,
+  dialog:     map_get($mat-grey, 800),
+  disabled-button: $white-12-opacity,
+  raised-button: map-get($mat-grey, 800),
+  focused-button: $white-6-opacity,
+  selected-button: map_get($mat-grey, 900),
+  selected-disabled-button: map_get($mat-grey, 800),
+  disabled-button-toggle: black,
+  unselected-chip: map_get($mat-grey, 700),
+  disabled-list-option: black,
+);
+
+@function create-light-theme($primary, $accent, $warn) {
+  @return (
+    primary: $primary,
+    accent: $accent,
+    warn: $warn,
+    is-dark: false,
+    foreground: $custom-light-theme-foreground,
+    background: $custom-light-theme-background,
+  );
+}
+
+
+@function create-dark-theme($primary, $accent, $warn) {
+  @return (
+    primary: $primary,
+    accent: $accent,
+    warn: $warn,
+    is-dark: true, //custom variable
+    foreground: $custom-dark-theme-foreground,
+    background: $custom-dark-theme-background,
+  );
+}
+
 /* Load Default Theme; This is necessary for loading styles*/
-// $theme: $custom-material-light-theme;
-// @include angular-material-theme($theme);
+// $customTheme: $custom-material-light-theme;
+// @include angular-material-theme($customTheme);
 // @import "../styles/custom-theming.scss";
 
 .custom-material-light-theme {
-  $theme: $custom-material-light-theme;
-  @include angular-material-theme($theme);
+  // $customTheme: $custom-material-light-theme;
+  $customTheme: create-light-theme(
+    $custom-material-theme-light-primary,
+    $custom-material-theme-light-accent,
+    $custom-material-theme-light-warn
+  );
+  @include angular-material-theme($customTheme);
 
   .mat-list-item.active-link {
     color: #ef6c00;
@@ -81,15 +190,19 @@ $custom-material-dark-theme: mat-dark-theme(
 }
 
 .custom-material-dark-theme {
-  $theme: $custom-material-dark-theme;
-  @include angular-material-theme($theme);
+  // $customTheme: $custom-material-dark-theme;
+  $customTheme: create-dark-theme(
+    $custom-material-theme-dark-primary,
+    $custom-material-theme-dark-accent,
+    $custom-material-theme-dark-warn
+  );
+  @include angular-material-theme($customTheme);
 
   // @import "../styles/custom-theming.scss";
-  // @include my-app-theme($theme);
+  // @include my-app-theme($customTheme);
 
   .mat-list-item.active-link {
     color: #ffd740;
     background-color: #313131;
   }
-
 }

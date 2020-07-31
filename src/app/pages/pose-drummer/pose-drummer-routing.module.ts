@@ -1,4 +1,4 @@
-import { ManageSoundDataComponent } from './manage-sound-data/manage-sound-data.component';
+
 import { PoseDrummerComponent } from './pose-drummer/pose-drummer.component';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
