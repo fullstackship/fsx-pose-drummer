@@ -1,27 +1,14 @@
-# PoseDrummer
+# Overview
+- Webcam Pose Drummer App using Tensorflow.JS/ML5 and Posenet Model
+- This project is to demonstrate a deepleaning model based application for web.
+- This app can be extended for other area, such as User Interaction for entertainment or other business areas.
+- Trains user's pose data from Webcam and Estimates the pose in realtime.
+- Plays a drum sound when certain confidence level is satisfied.
+- Inspired from Tensorflow.js Posenet project: https://github.com/tensorflow/tfjs-models/tree/master/posenet
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.1.7.
+<br>
 
-## Development server
-
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+# Upcoming Features
+- Sound files Manager with Firebase
+- Trained model save and load via Firebase
+- Speech Recognition to command user actions
