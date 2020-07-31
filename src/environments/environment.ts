@@ -7,14 +7,14 @@ export const environment = {
   baseUrl: 'http://localhost:4200',
 
   firebase: {
-    apiKey: "AIzaSyCCkseMtiz9qAgz_YgQmE4R9WXxUqLkTsU",
-    authDomain: "fullstackx-dev.firebaseapp.com",
-    databaseURL: "https://fullstackx-dev.firebaseio.com",
+    apiKey: "",
+    authDomain: "",
+    databaseURL: "",
     projectId: "fullstackx-dev",
-    storageBucket: "fullstackx-dev.appspot.com",
-    messagingSenderId: "742091847510",
-    appId: "1:742091847510:web:ff3da8b905c92ffb2888f7",
-    measurementId: "G-G6WYW40NX4"
+    storageBucket: "",
+    messagingSenderId: "",
+    appId: "",
+    measurementId: ""
   }
 };
 
